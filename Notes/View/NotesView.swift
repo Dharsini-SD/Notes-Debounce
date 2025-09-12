@@ -24,7 +24,12 @@ struct NotesView: View {
                     
                     List(notesViewModel.filteredNotes){note in
                         VStack(alignment: .leading){
-                            Text(note.title).font(.headline)
+                            HStack{
+                                Text(note.title).font(.headline)
+                                Spacer()
+                                Text(note.lastEditAt.formatted()).font(.subheadline)
+                            }
+                            
                             Text(note.text).font(.caption)
                         }.swipeActions(edge: .trailing) {
                             Button(action: {
