@@ -23,21 +23,24 @@ struct NotesView: View {
                    
                     
                     List(notesViewModel.filteredNotes){note in
-                        VStack(alignment: .leading){
-                            HStack{
-                                Text(note.title).font(.headline)
-                                Spacer()
-                                Text(note.lastEditAt.formatted()).font(.subheadline)
-                            }
-                            
-                            Text(note.text).font(.caption)
-                        }.swipeActions(edge: .trailing) {
-                            Button(action: {
-                                notesViewModel.deleteNote(of: note.id)
-                            }){
-                                Image(systemName: "trash.fill")
-                            }
+                        NavigationLink(destination: EditNotesView(notesViewModel: notesViewModel, note: note)){
+                            VStack(alignment: .leading){
+                               HStack{
+                                   Text(note.title).font(.headline)
+                                   Spacer()
+                                   Text(note.lastEditAt.formatted()).font(.subheadline)
+                               }
+                               
+                               Text(note.text).font(.caption)
+                           }.swipeActions(edge: .trailing) {
+                               Button(action: {
+                                   notesViewModel.deleteNote(of: note.id)
+                               }){
+                                   Image(systemName: "trash.fill")
+                               }
+                           }
                         }
+                        
                     }
                 }.searchable(text: $notesViewModel.searchText, prompt: "Search")
                 
@@ -47,41 +50,10 @@ struct NotesView: View {
                     }
             }.navigationTitle("Notes")
         }.sheet(isPresented: $addNote){
-            NavigationStack{
-                Form {
-                      Section(header: Text("Title")) {
-                          TextField("Enter title", text: $title)
-                              .textFieldStyle(.roundedBorder)
-                      }
-                      
-                      Section(header: Text("Content")) {
-                          TextEditor(text: $content)
-                              .frame(height: 200)
-                      }
-                  }.navigationTitle("Add Note")
-                    .toolbar {
-                           ToolbarItem(placement: .navigationBarLeading) {
-                               Button("Cancel") {
-                                   addNote = false
-                                   dismiss()
-                               }
-                           }
-                           
-                           ToolbarItem(placement: .navigationBarTrailing) {
-                               Button("Save") {
-                                   addNote = false
-                                   if !title.isEmpty {
-                                       notesViewModel.addNote(text: content, title: title)
-                                   }
-                                   dismiss()
-                               }
-                               .bold()
-                           }
-                       }
-            }
             
+            AddNotesView(title: $title, content: $content, addNote: $addNote, notesViewModel: notesViewModel)
                 
-        }.presentationDetents([.medium])
+        }
        
     }
 }

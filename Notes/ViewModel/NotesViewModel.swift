@@ -71,4 +71,16 @@ class NotesViewModel : ObservableObject{
         notes.count > 1 ? notes.removeAll(where: { $0.id == id }) : print("Cannot delete last note")
         filteredNotes = notes
     }
+    
+    func editNote(of id:UUID,text:String,title:String){
+        if notes.count > 0{
+            if let index = notes.firstIndex(where: { $0.id == id }) {
+                notes[index].title = title
+                notes[index].text = text
+                notes[index].lastEditAt = Date()
+            }
+        }
+        filteredNotes = notes
+    }
+    
 }
