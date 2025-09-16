@@ -9,7 +9,8 @@ import SwiftUI
 import Combine
 
 struct NotesView: View {
-    @StateObject var notesViewModel: NotesViewModel = NotesViewModel()
+    @ObservedObject var viewModel: NotesViewModel
+    @ObservedObject var coordinator: NotesCoordinator
     @State var addNote : Bool = false
     @State var title : String = ""
     @State var content : String = ""
@@ -19,45 +20,28 @@ struct NotesView: View {
             ZStack{
                 
                 
-                VStack{
-                   
-                    
-                    List(notesViewModel.filteredNotes){note in
-                        NavigationLink(destination: EditNotesView(notesViewModel: notesViewModel, note: note)){
-                            VStack(alignment: .leading){
-                               HStack{
-                                   Text(note.title).font(.headline)
-                                   Spacer()
-                                   Text(note.lastEditAt.formatted()).font(.subheadline)
-                               }
-                               
-                               Text(note.text).font(.caption)
-                           }.swipeActions(edge: .trailing) {
-                               Button(action: {
-                                   notesViewModel.deleteNote(of: note.id)
-                               }){
-                                   Image(systemName: "trash.fill")
-                               }
-                           }
-                        }
-                        
-                    }
-                }.searchable(text: $notesViewModel.searchText, prompt: "Search")
+                VStack {
+                            List(viewModel.filteredNotes) { note in
+                                Button {
+                                    coordinator.showEdit(note: note)
+                                } label: {
+                                    VStack(alignment: .leading) {
+                                        Text(note.title).font(.headline)
+                                        Text(note.text).font(.subheadline)
+                                    }
+                                }
+                            }
+
+                           
+                        }.searchable(text: $viewModel.searchText, prompt: "Search")
                 
                 Image(systemName: "plus.circle.fill").resizable().frame(width: 60, height: 60).foregroundColor(.blue).frame(maxWidth: .infinity,maxHeight: .infinity,alignment: .bottomTrailing).padding()
                     .onTapGesture {
-                        addNote = true
+                        coordinator.showSheet(.addNote)
                     }
             }.navigationTitle("Notes")
-        }.sheet(isPresented: $addNote){
-            
-            AddNotesView(title: $title, content: $content, addNote: $addNote, notesViewModel: notesViewModel)
-                
         }
        
     }
 }
 
-#Preview {
-    NotesView()
-}
