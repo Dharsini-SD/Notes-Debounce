@@ -13,7 +13,7 @@ struct EditNotesView: View {
     var note : Note
     @ObservedObject var notesViewModel : NotesViewModel
     @Environment(\.dismiss) var dismiss
-    
+    @EnvironmentObject var coordinator: NotesCoordinator
     init(notesViewModel: NotesViewModel,note:Note) {
        
         self.notesViewModel = notesViewModel
@@ -40,7 +40,7 @@ struct EditNotesView: View {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button("Cancel") {
                             
-                            dismiss()
+                            coordinator.pop()
                         }
                     }
                     

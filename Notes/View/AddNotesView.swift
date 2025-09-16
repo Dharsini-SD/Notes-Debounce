@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct AddNotesView: View {
-    @Binding var title : String
-    @Binding var content : String
-    @Binding var addNote : Bool
+    @State var title : String = ""
+    @State var content : String = ""
+    @EnvironmentObject var coordinator : NotesCoordinator
     @ObservedObject var notesViewModel : NotesViewModel
     @Environment(\.dismiss) var dismiss
     var body: some View {
@@ -29,18 +29,18 @@ struct AddNotesView: View {
                 .toolbar {
                        ToolbarItem(placement: .navigationBarLeading) {
                            Button("Cancel") {
-                               addNote = false
-                               dismiss()
+                               
+                               coordinator.dismissSheet()
                            }
                        }
                        
                        ToolbarItem(placement: .navigationBarTrailing) {
                            Button("Save") {
-                               addNote = false
+                               
                                if !title.isEmpty {
                                    notesViewModel.addNote(text: content, title: title)
                                }
-                               dismiss()
+                               coordinator.dismissSheet()
                            }
                            .bold()
                        }
