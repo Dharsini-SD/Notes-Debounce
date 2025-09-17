@@ -14,6 +14,7 @@ class NotesViewModel : ObservableObject{
     @Published var searchText: String = ""
     @Published var filteredNotes: [Note] = []
     @Published var cancellable : Set<AnyCancellable> = []
+    private var localStorage = LocalStorage()
     init() {
         self.notes =  [
             Note(title: "Grocery List",
@@ -46,6 +47,9 @@ class NotesViewModel : ObservableObject{
                   
             }
             .store(in: &cancellable)
+        
+        localStorage.save(notes: notes)
+        notes = localStorage.load()
             
         }
     
@@ -66,10 +70,12 @@ class NotesViewModel : ObservableObject{
     func addNote(text: String,title: String){
         notes.append(Note(id: UUID(), title: title, text: text,lastEditAt: Date.now))
         filteredNotes = notes
+        localStorage.save(notes: notes)
     }
     func deleteNote(of id:UUID){
         notes.count > 1 ? notes.removeAll(where: { $0.id == id }) : print("Cannot delete last note")
         filteredNotes = notes
+        localStorage.save(notes: notes)
     }
     
     func editNote(of id:UUID,text:String,title:String){
@@ -81,6 +87,7 @@ class NotesViewModel : ObservableObject{
             }
         }
         filteredNotes = notes
+        localStorage.save(notes: notes)
     }
     
 }
