@@ -64,7 +64,9 @@ class NotesViewModel : ObservableObject{
         }
     }
     
-    
+    func sortWithDate(){
+        notes.sort { $0.lastEditAt > $1.lastEditAt  }
+    }
     
     
     func addNote(text: String,title: String){
